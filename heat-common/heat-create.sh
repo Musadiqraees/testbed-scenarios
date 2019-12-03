@@ -5,17 +5,19 @@ home="."
 
 HEAT_TEMPLATE="$1"
 DEFAULT_NAME="$2"
-shift 2
+PARAMETER_PATH="$3"
+shift 3
 
 case $# in
     0) HEAT_CMD="create"; NAME="$DEFAULT_NAME";;
     1) HEAT_CMD="create"; NAME="$1";;
     2) HEAT_CMD="$1"; NAME="$2";;
-    3) HEAT_CMD="$1"; NAME="$2"; EXISTING="$3";;
+    3) HEAT_CMD="$1"; NAME="$2"; EXISTING="$4";;
     *) echo "Parameters: [command] [stack-name] [--existing]"; exit 1;;
 esac
 
-PARM="$home/parameters.txt"
+PARM="$home/$PARAMETER_PATH/parameters.txt"
+
 test -e "$PARM" || { echo "The required file '$PARM' does not exist. Create it based on 'parameters.txt.template'"; exit 1; }
 
 HEAT_CMD="stack $HEAT_CMD"
