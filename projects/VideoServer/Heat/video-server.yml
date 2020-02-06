@@ -68,8 +68,9 @@ parameters:
 
   install_docker_script:
     type: string
-    description: Setup script. Empty by default, bootstrapping handled by Ansible.
+    description: Setup script for Docker. This parameter should not be set, it is here to reuse the code for multiple VMs.
     default: ""
+
 
 resources:
 

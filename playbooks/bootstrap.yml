@@ -1,13 +1,16 @@
 #!/usr/bin/env ansible-playbook
+ 
 
 - name: Bootstrap Python
   hosts: vms:hypervisors:bastion
+  become: true
   gather_facts: false
   roles:
     - ../roles/bootstrap
 
 - name: Install apt packages and docker
   hosts: vms:hypervisors:bastion
+  become: true
   tasks:
     - name: Install required packages with apt
       apt:
@@ -17,6 +20,9 @@
   roles:
     - ../roles/docker
     - ../roles/docker-compose
+
+ 
+    
 
 # TODO?
 # echo -e 'Acquire::http::Timeout "20";\nAcquire::ftp::Timeout "10";' > /etc/apt/apt.conf.d/99timeout
