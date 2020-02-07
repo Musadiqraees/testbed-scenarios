@@ -2,9 +2,19 @@
 
 
 - hosts: all
-  become: true
+  become: yes
+  vars:
+    kernel_version: "4.4.0-119-generic"
+     
 
-   
+
+
+- name: Bootstrap Python
+  hosts: vms:hypervisors:bastion
+  become: true
+  gather_facts: false
+  roles:
+    - ../roles/bootstrap
 
 - name: Install apt packages and docker
   hosts: vms:hypervisors:bastion
@@ -14,42 +24,53 @@
       apt:
         name: "{{ bootstrap_packages }}"
         state: present
+        update_cache: yes
   roles:
-    - ../roles/ansible-docker
+    - ../roles/docker
+    - ../roles/docker-compose
 
 
   tasks:
+     
+    - name: users | adding docker users (for use without sudo)
+      user:
+        name: 'ubuntu'
+        append: yes
+        groups: docker
+      become: true
+       
+
     - name: ansible create directory with mode setting example
       file:
-        path: ~/peertube/docker-volume/traefik
+        path: /peertube/docker-volume/traefik
         state: directory
         mode: "u=rw,g=wx,o=rwx"
         recurse: yes
-        mode: 0775
+       
 
     - name: Download traefik.toml
       get_url:
         url: https://raw.githubusercontent.com/chocobozzz/PeerTube/master/support/docker/production/config/traefik.toml
-        dest: ~/peertube/docker-volume/traefik/traefik.toml
+        dest: /peertube/docker-volume/traefik/traefik.toml
         mode: "u=rw,g=wx,o=rwx"
 
     - name: Download docker-compose.yml
       get_url:
         url: https://raw.githubusercontent.com/chocobozzz/PeerTube/master/support/docker/production/docker-compose.yml
-        dest: ~/peertube/docker-compose.yml
+        dest: /peertube/docker-compose.yml
         mode: 0644
 
 
     - name: Download .env
       get_url:
         url: https://raw.githubusercontent.com/Chocobozzz/PeerTube/master/support/docker/production/.env
-        dest: ~/peertube/.env
+        dest: /peertube/.env
         mode: 0600
 
 
     - name: Insert a line at the end of a file.
       lineinfile:
-        path: ~/peertube/.env
+        path: /peertube/.env
         line: NODE_TLS_REJECT_UNAUTHORIZED=0  
 
     - name: Test a variable
@@ -57,7 +78,7 @@
 
     - name: Replace a localhost entry with our own
       lineinfile:
-        path: ~/peertube/.env
+        path: /peertube/.env
         regexp: '^PEERTUBE_WEBSERVER_HOSTNAME=domain.tld'
         line: PEERTUBE_WEBSERVER_HOSTNAME={{inventory_hostname}}
         mode: "u=rw,g=wx,o=rwx"
@@ -71,13 +92,17 @@
  
   
     - name: start docker-compose
-      become: yes
-      become_method: enable
-      become_user: ubuntu
+      become: true
+      become_method: sudo
       docker_compose:
-        project_src: ~/peertube/
+        project_src: /peertube/
         state: present
         pull: yes
+       
+
+ 
+  
+  
      
       
      
