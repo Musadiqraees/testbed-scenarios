@@ -1,13 +1,8 @@
 #!/usr/bin/env ansible-playbook
 
-
 - hosts: all
   become: yes
-  vars:
-    kernel_version: "4.4.0-119-generic"
-     
-
-
+ 
 
 - name: Bootstrap Python
   hosts: vms:hypervisors:bastion
@@ -31,15 +26,6 @@
 
 
   tasks:
-     
-    - name: users | adding docker users (for use without sudo)
-      user:
-        name: 'ubuntu'
-        append: yes
-        groups: docker
-      become: true
-       
-
     - name: ansible create directory with mode setting example
       file:
         path: /peertube/docker-volume/traefik

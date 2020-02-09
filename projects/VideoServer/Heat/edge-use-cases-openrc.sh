@@ -29,7 +29,7 @@ export OS_USERNAME="raaes"
 export OS_PASSWORD="eighaN8Y"
 # If your configuration has multiple regions, we set that information here.
 # OS_REGION_NAME is optional and only valid in certain environments.
-export OS_REGION_NAME="FarEdge"
+export OS_REGION_NAME="PublicCloud"
 # Don't leave a blank variable, unset it if it was empty
 if [ -z "$OS_REGION_NAME" ]; then unset OS_REGION_NAME; fi
 export OS_INTERFACE=public

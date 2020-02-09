@@ -1,0 +1,40 @@
+#!/usr/bin/env ansible-playbook
+
+vars_files:
+    - variable.yml
+
+- name: Launch a compute instance
+  hosts: localhost
+  tasks:
+   - name: Launch a VM1
+     os_server:
+        image: {{image}}
+        name: vm1
+        key_name: RaeesMacbook
+        availability_zone: nova
+        flavor: m1.medium
+        state: present
+        wait: yes
+        auto_floating_ip: yes
+        network: UseCase-Net
+        security_groups: Raees,default
+        meta:
+     register: webserver
+
+   - name: Wait for SSH on the Instance
+     command: >
+        ssh -oBatchMode=yes -oStrictHostKeyChecking=no 
+        ubuntu@{{webserver.server.public_v4}} true
+     register: result
+     retries: 30
+     delay: 10 
+
+   - name: Add CentOS Instance to Inventory
+     add_host: name=webserver groups=webservers
+               ansible_ssh_host={{ webserver.server.public_v4 }}
+   - ini_file:
+        dest: ansible-inventory.ini
+        section: webservers
+        option: myvm ansible_host
+        value: "{{ webserver.server.public_v4 }}"
+        no_extra_spaces: yes
