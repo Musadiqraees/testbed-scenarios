@@ -1,23 +1,25 @@
 #!/usr/bin/env ansible-playbook
 
-vars_files:
-    - variable.yml
+
 
 - name: Launch a compute instance
   hosts: localhost
+  vars_files: "{{ myvarfile }}"
+
+
   tasks:
    - name: Launch a VM1
      os_server:
-        image: {{image}}
-        name: vm1
-        key_name: RaeesMacbook
-        availability_zone: nova
-        flavor: m1.medium
+        image: "{{ current_image }}"
+        name: "{{ current_hostname }}"
+        key_name: "{{ key_name }}"
+        availability_zone: "{{ availability_zone }}"
+        flavor: "{{ current_flavor }}"
         state: present
         wait: yes
         auto_floating_ip: yes
-        network: UseCase-Net
-        security_groups: Raees,default
+        network: "{{ current_network }}"
+        security_groups: "{{ current_security_groups }}"
         meta:
      register: webserver
 
@@ -35,6 +37,6 @@ vars_files:
    - ini_file:
         dest: ansible-inventory.ini
         section: webservers
-        option: myvm ansible_host
+        option: "{{ current_url}}"
         value: "{{ webserver.server.public_v4 }}"
         no_extra_spaces: yes

@@ -1,8 +1,0 @@
-  image: ubuntu-18.04
-  name: vm1
-  key_name: RaeesMacbook
-  availability_zone: nova
-  flavor: m1.medium
-  state: present
-  network: UseCase-Net
-  security_groups: Raees,default
