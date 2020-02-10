@@ -1,0 +1,78 @@
+
+
+- hosts: webservers
+  become: yes
+   
+  tasks:
+    - name: ansible create directory with mode setting example
+      file:
+        path: /peertube/docker-volume/traefik
+        state: directory
+        mode: "u=rw,g=wx,o=rwx"
+        recurse: yes
+      
+
+    - name: Download traefik.toml
+      get_url:
+        url: https://raw.githubusercontent.com/chocobozzz/PeerTube/master/support/docker/production/config/traefik.toml
+        dest: /peertube/docker-volume/traefik/traefik.toml
+        mode: "u=rw,g=wx,o=rwx"
+
+    - name: Download docker-compose.yml
+      get_url:
+        url: https://raw.githubusercontent.com/chocobozzz/PeerTube/master/support/docker/production/docker-compose.yml
+        dest: /peertube/docker-compose.yml
+        mode: 0644
+
+
+    - name: Download .env
+      get_url:
+        url: https://raw.githubusercontent.com/Chocobozzz/PeerTube/master/support/docker/production/.env
+        dest: /peertube/.env
+        mode: 0600
+
+
+    - name: Insert a line at the end of a file.
+      lineinfile:
+        path: /peertube/.env
+        line: NODE_TLS_REJECT_UNAUTHORIZED=0  
+
+    - name: Test a variable
+      debug: var=inventory_hostname
+
+    - name: Replace a localhost entry with our own
+      lineinfile:
+        path: /peertube/.env
+        regexp: '^PEERTUBE_WEBSERVER_HOSTNAME=domain.tld'
+        line: PEERTUBE_WEBSERVER_HOSTNAME={{inventory_hostname}}
+        mode: "u=rw,g=wx,o=rwx"
+
+
+    - name: adding existing user to group sudo
+      user:
+        name: 'ubuntu'
+        groups: sudo
+        append: yes 
+
+    - name: Ensure group "somegroup" exists
+      group:
+        name: docker
+        state: present
+        
+    - name:  Docker user group
+      shell: sudo usermod -aG docker $USER
+    
+
+    - name: enable and start docker service
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+   
+    
+    - name: Run docker-compose up
+      shell: docker-compose up
+      args:
+        chdir: /peertube
+      become: True # because you're using sudo

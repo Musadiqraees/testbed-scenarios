@@ -1,0 +1,28 @@
+#!/usr/bin/env ansible-playbook
+
+- hosts: webservers
+  become: yes
+ 
+
+- name: Bootstrap Python
+  hosts: webservers
+  become: true
+  gather_facts: false
+  roles:
+    - roles/bootstrap
+
+- name: Install apt packages and docker
+  hosts: webservers
+  become: true
+  tasks:
+    - name: Install required packages with apt
+      apt:
+        name: "{{ bootstrap_packages }}"
+        state: present
+        update_cache: yes
+  roles:
+    - roles/docker
+    - roles/docker-compose
+
+
+  

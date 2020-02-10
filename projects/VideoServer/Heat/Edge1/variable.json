@@ -4,6 +4,6 @@
   availability_zone: nova
   current_flavor: m1.medium
   current_state: present
-  current_network: UseCase-Net
+  current_network: UseCaseNet
   current_security_groups: Raees,default
   current_url: peertube4.cit.local

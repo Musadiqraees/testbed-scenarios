@@ -38,5 +38,13 @@
         dest: ansible-inventory.ini
         section: webservers
         option: "{{ current_url}}"
-        value: "{{ webserver.server.public_v4 }}"
         no_extra_spaces: yes
+        allow_no_value: yes
+  
+   - ini_file:
+         dest: ansible-inventory.ini
+         section: IpDNS
+         option: "{{ webserver.server.public_v4 }}" 
+         value: "{{ current_url}}"
+         no_extra_spaces: yes
+            

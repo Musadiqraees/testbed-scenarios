@@ -1,0 +1,20 @@
+- name: check DNS
+  hosts: DNS
+  remote_user: ubuntu
+  tasks:
+    - name: Add Ansible inventory mappings to /etc/hosts
+      become: true
+      become_method: sudo
+      blockinfile:
+        path: /etc/hosts
+        block: |
+          {% for host in groups['IpDNS'] %}
+          {{ host | replace('=', ' ') }}  
+          {% endfor %}
+
+    - name: restart Dnsserver
+      shell: sudo systemctl restart dnsmasq
+          
+      
+
+      
