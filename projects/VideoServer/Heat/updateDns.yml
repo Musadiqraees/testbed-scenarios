@@ -18,3 +18,5 @@
       
 
       
+
+      nodelist={%for host in groups['webservers']%}"{{hostvars[host] != 'peertube2.cit.local'}}"{% if not loop.last %},{% endif %}{% endfor %}

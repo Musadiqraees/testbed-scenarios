@@ -37,6 +37,13 @@
         path: /peertube/.env
         line: NODE_TLS_REJECT_UNAUTHORIZED=0  
 
+
+    - name: Insert a line at the end of a file.
+      lineinfile:
+        path: /peertube/.env
+        line: PT_INITIAL_ROOT_PASSWORD=123456789
+        
+
     - name: Test a variable
       debug: var=inventory_hostname
 
@@ -69,10 +76,8 @@
         enabled: yes
         state: started
 
-   
-    
     - name: Run docker-compose up
-      shell: docker-compose up
+      shell: docker-compose up -d
       args:
         chdir: /peertube
       become: True # because you're using sudo

@@ -1,0 +1,66 @@
+
+- name: RestAPi
+  hosts: webservers
+  become: true
+   
+  
+  tasks:
+    - name: getClientId
+      uri:
+        url: https://{{inventory_hostname}}/api/v1/oauth-clients/local
+        return_content: yes
+        method: GET
+        validate_certs: no
+      register : client
+
+    - name: getting inside json structure for a string
+      debug: msg="{{ client }}"
+
+
+    - name: gettokenBearer
+      uri:
+        url: https://{{inventory_hostname}}/api/v1/users/token
+        return_content: yes
+        method: POST
+        body_format: form-urlencoded
+        body: 
+        - [ client_id, "{{ client.json.client_id }}" ]
+        - [ client_secret, "{{ client.json.client_secret }}" ]
+        - [ grant_type, password]
+        - [ response_type, code]
+        - [ username, root]
+        - [ password, 123456789 ]
+        validate_certs: no
+      register : token
+       
+    - name: getting inside json structure for a string
+      debug: msg="{{ client }}"
+
+    - name: Create List of nodes to be added into Cluster
+      set_fact: nodelist={{ groups['webservers'] | reject('search', inventory_hostname ) | list }}
+      
+          
+    - name: getting inside json structure for a string
+      debug: msg="[{{ nodelist }}]"
+  
+
+    - name: getting inside token
+      debug: msg="{{ token }}"
+
+    - name: addPeers
+      uri:
+        url: https://{{inventory_hostname}}/api/v1/server/following
+        return_content: yes
+        status_code: 204
+        body: 
+        - [ hosts, "{{ nodelist }}" ]
+        method: POST
+        body_format: form-urlencoded
+        validate_certs: no
+        headers:
+          Authorization: "Bearer {{ token.json.access_token }}"
+      ignore_errors: yes
+       
+        
+  
+    

@@ -30,8 +30,14 @@
      register: result
      retries: 30
      delay: 10 
+     ignore_errors: yes
 
-   - name: Add CentOS Instance to Inventory
+   - name: add resolve config
+      shell: sudo apt install resolvconf
+      become: True 
+     
+
+   - name: Add ubuntu Instance to Inventory
      add_host: name=webserver groups=webservers
                ansible_ssh_host={{ webserver.server.public_v4 }}
    - ini_file:
@@ -45,6 +51,6 @@
          dest: ansible-inventory.ini
          section: IpDNS
          option: "{{ webserver.server.public_v4 }}" 
-         value: "{{ current_url}}"
+         value: "{{ current_url }}"
          no_extra_spaces: yes
             
