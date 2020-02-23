@@ -2,6 +2,7 @@
 - name: RestAPi
   hosts: webservers
   become: true
+  remote_user: ubuntu
    
   
   tasks:

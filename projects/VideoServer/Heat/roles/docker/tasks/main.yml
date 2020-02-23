@@ -21,11 +21,7 @@
     state: present
     update_cache: yes
 
-- name: Install docker Python module
-  tags: [ bootstrap ]
-  pip:
-    name: docker
-    state: present
+
 
 # TODO check if required, or delete
 

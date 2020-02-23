@@ -2,24 +2,28 @@
 
 - hosts: webservers
   become: yes
+
  
 
 - name: Bootstrap Python
   hosts: webservers
   become: true
-  gather_facts: false
+  remote_user: ubuntu
+  gather_facts: true
   roles:
     - roles/bootstrap
 
 - name: Install apt packages and docker
   hosts: webservers
   become: true
+  remote_user: ubuntu
+  gather_facts: true
+
   tasks:
     - name: Install required packages with apt
       apt:
         name: "{{ bootstrap_packages }}"
         state: present
-        update_cache: yes
   roles:
     - roles/docker
     - roles/docker-compose

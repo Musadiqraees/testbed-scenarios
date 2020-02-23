@@ -5,6 +5,8 @@
 - name: Launch a compute instance
   hosts: localhost
   vars_files: "{{ myvarfile }}"
+  remote_user: ubuntu
+  gather_facts: True
 
 
   tasks:
@@ -31,10 +33,6 @@
      retries: 30
      delay: 10 
      ignore_errors: yes
-
-   - name: add resolve config
-      shell: sudo apt install resolvconf
-      become: True 
      
 
    - name: Add ubuntu Instance to Inventory
@@ -46,6 +44,7 @@
         option: "{{ current_url}}"
         no_extra_spaces: yes
         allow_no_value: yes
+        
   
    - ini_file:
          dest: ansible-inventory.ini

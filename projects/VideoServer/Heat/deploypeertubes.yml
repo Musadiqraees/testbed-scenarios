@@ -2,6 +2,8 @@
 
 - hosts: webservers
   become: yes
+  remote_user: ubuntu
+  gather_facts: True
    
   tasks:
     - name: ansible create directory with mode setting example
@@ -14,20 +16,20 @@
 
     - name: Download traefik.toml
       get_url:
-        url: https://raw.githubusercontent.com/chocobozzz/PeerTube/master/support/docker/production/config/traefik.toml
+        url: https://raw.githubusercontent.com/Musadiqraees/peertubeFiles/master/traefik.toml
         dest: /peertube/docker-volume/traefik/traefik.toml
         mode: "u=rw,g=wx,o=rwx"
 
     - name: Download docker-compose.yml
       get_url:
-        url: https://raw.githubusercontent.com/chocobozzz/PeerTube/master/support/docker/production/docker-compose.yml
+        url: https://raw.githubusercontent.com/Musadiqraees/peertubeFiles/master/docker-compose.yml
         dest: /peertube/docker-compose.yml
         mode: 0644
 
 
     - name: Download .env
       get_url:
-        url: https://raw.githubusercontent.com/Chocobozzz/PeerTube/master/support/docker/production/.env
+        url: https://raw.githubusercontent.com/Musadiqraees/peertubeFiles/master/.env
         dest: /peertube/.env
         mode: 0600
 
@@ -81,3 +83,9 @@
       args:
         chdir: /peertube
       become: True # because you're using sudo
+      ignore_errors: True
+
+    
+      
+
+   

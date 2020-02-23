@@ -4,19 +4,39 @@
   tasks:
     - name: Add Ansible inventory mappings to /etc/hosts
       become: true
-      become_method: sudo
       blockinfile:
         path: /etc/hosts
         block: |
           {% for host in groups['IpDNS'] %}
           {{ host | replace('=', ' ') }}  
           {% endfor %}
-
     - name: restart Dnsserver
-      shell: sudo systemctl restart dnsmasq
-          
-      
+      become: true
+      shell: systemctl restart dnsmasq
 
-      
 
-      nodelist={%for host in groups['webservers']%}"{{hostvars[host] != 'peertube2.cit.local'}}"{% if not loop.last %},{% endif %}{% endfor %}
+- name: change Dns of peertube Hosts
+  hosts: webservers
+  remote_user: ubuntu
+  tasks:
+    - name: Add Ansible inventory mappings to /etc/hosts
+      become: true
+      shell:  apt install resolvconf
+
+    - name: Insert a line at the end of a file.
+      become: true
+      lineinfile:
+        path: /etc/resolvconf/resolv.conf.d/head
+        line: nameserver 10.1.10.104 
+      ignore_errors: True
+
+    - name: restart resolvconf
+      become: true
+      shell: service resolvconf restart
+
+       
+  
+
+  
+
+    
