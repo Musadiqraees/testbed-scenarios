@@ -3,9 +3,14 @@
   hosts: webservers
   become: true
   remote_user: ubuntu
-   
-  
   tasks:
+    - name: Wait for host
+      become: false
+      wait_for:
+        host: https://{{inventory_hostname}}/api/v1/oauth-clients/local     
+        timeout: 30  
+      delegate_to: localhost
+
     - name: getClientId
       uri:
         url: https://{{inventory_hostname}}/api/v1/oauth-clients/local

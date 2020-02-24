@@ -20,8 +20,7 @@
   remote_user: ubuntu
   tasks:
     - name: Add Ansible inventory mappings to /etc/hosts
-      become: true
-      shell:  apt install resolvconf
+      shell: sudo apt install resolvconf
 
     - name: Insert a line at the end of a file.
       become: true
