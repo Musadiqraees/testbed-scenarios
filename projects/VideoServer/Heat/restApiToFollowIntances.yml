@@ -73,24 +73,18 @@
   
 
        
-- name: Config SonarQube Server Example using API and uri/curl
+- name: upload videos to peertube
   hosts: webservers
   connection: local
-  vars:
-    sonar_api_url: https://{{inventory_hostname}}/api/v1/videos/upload
-    sonar_token: "Authorization:Bearer {{ token.json.access_token }}"
-    sonar_password: "123456789"
-    sonar_profile: "video1.mp4"
-    channelId: "Main root channel"
-    name: "root"
   tasks:
-    - name: POST a SonarQube Profile xml via curl
+    - name: POST video via curl
       shell: 'curl -k -i -X POST "https://{{inventory_hostname}}/api/v1/videos/upload" \
                     -H "Content-Type: multipart/form-data" \
                     -F channelId="1" \
                     -F name="Main" \
                     -H "Authorization: Bearer {{ token.json.access_token }}" \
-                    -F videofile=@video1.mp4 '
+                    -F videofile=@video1.mp4 
+                    -F privacy="1" '
       register: out
     - debug: var=out.stdout_lines
 
