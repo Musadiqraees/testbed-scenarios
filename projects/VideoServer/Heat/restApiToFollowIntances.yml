@@ -8,7 +8,7 @@
       become: false
       wait_for:
         host: https://{{inventory_hostname}}/api/v1/oauth-clients/local     
-        timeout: 30  
+        timeout: 0  
       delegate_to: localhost
 
     - name: getClientId
@@ -66,7 +66,32 @@
         headers:
           Authorization: "Bearer {{ token.json.access_token }}"
       ignore_errors: yes
-       
-        
+
+   
+      
+
   
-    
+
+       
+- name: Config SonarQube Server Example using API and uri/curl
+  hosts: webservers
+  connection: local
+  vars:
+    sonar_api_url: https://{{inventory_hostname}}/api/v1/videos/upload
+    sonar_token: "Authorization:Bearer {{ token.json.access_token }}"
+    sonar_password: "123456789"
+    sonar_profile: "video1.mp4"
+    channelId: "Main root channel"
+    name: "root"
+  tasks:
+    - name: POST a SonarQube Profile xml via curl
+      shell: 'curl -k -i -X POST "https://{{inventory_hostname}}/api/v1/videos/upload" \
+                    -H "Content-Type: multipart/form-data" \
+                    -F channelId="1" \
+                    -F name="Main" \
+                    -H "Authorization: Bearer {{ token.json.access_token }}" \
+                    -F videofile=@video1.mp4 '
+      register: out
+    - debug: var=out.stdout_lines
+
+
