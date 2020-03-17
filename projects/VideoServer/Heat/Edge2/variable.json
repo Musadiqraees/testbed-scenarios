@@ -1,9 +1,9 @@
   current_image: ubuntu-18.04
-  current_hostname: peertube1234
+  current_site: Egde2Site
   key_name: RaeesMacbook
   availability_zone: nova
   current_flavor: m1.medium
   current_state: present
   current_network: UseCase-Net
   current_security_groups: Raees,default
-  current_url: peertube1234.cit.local
+  numberOfInstances: 2

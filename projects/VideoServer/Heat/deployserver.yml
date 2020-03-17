@@ -7,13 +7,50 @@
   vars_files: "{{ myvarfile }}"
   remote_user: ubuntu
   gather_facts: True
-
+  vars: 
+    count: "{{ numberOfInstances }}"
 
   tasks:
-   - name: Launch a VM1
+   - name: create a security group for web servers
+     os_security_group:
+       name: peertubeSecurityGroup
+       state: present
+       description: security group for web servers
+
+   - name: allow port 80 for http
+     os_security_group_rule:
+       security_group: peertubeSecurityGroup
+       protocol: tcp
+       port_range_min: 80
+       port_range_max: 80
+       remote_ip_prefix: 0.0.0.0/0
+
+   - name: allow port 443 for https
+     os_security_group_rule:
+       security_group: peertubeSecurityGroup
+       protocol: tcp
+       port_range_min: 443
+       port_range_max: 443
+       remote_ip_prefix: 0.0.0.0/0
+
+   - name: allow port 80 for http
+     os_security_group_rule:
+       security_group: peertubeSecurityGroup
+       protocol: icmp
+       remote_ip_prefix: 0.0.0.0/0
+
+   - name: allow port 443 for https
+     os_security_group_rule:
+       security_group: peertubeSecurityGroup
+       protocol: tcp
+       port_range_min: 22
+       port_range_max: 22
+       remote_ip_prefix: 0.0.0.0/0  
+
+   - name: Launch a VMs on {{ current_site }}
      os_server:
         image: "{{ current_image }}"
-        name: "{{ current_hostname }}"
+        name:  "peertube{{current_site}}{{item}}"
         key_name: "{{ key_name }}"
         availability_zone: "{{ availability_zone }}"
         flavor: "{{ current_flavor }}"
@@ -21,35 +58,27 @@
         wait: yes
         auto_floating_ip: yes
         network: "{{ current_network }}"
-        security_groups: "{{ current_security_groups }}"
+        security_groups: default,peertubeSecurityGroup
         meta:
      register: webserver
+     with_sequence: 
+         count={{ count }}
+     ignore_errors: True
 
-   - name: Wait for SSH on the Instance
-     command: >
-        ssh -oBatchMode=yes -oStrictHostKeyChecking=no 
-        ubuntu@{{webserver.server.public_v4}} true
-     register: result
-     retries: 30
-     delay: 10 
-     ignore_errors: yes
-     
-
-   - name: Add ubuntu Instance to Inventory
-     add_host: name=webserver groups=webservers
-               ansible_ssh_host={{ webserver.server.public_v4 }}
    - ini_file:
         dest: ansible-inventory.ini
         section: webservers
-        option: "{{ current_url}}"
+        option: "{{ item.server.name }}.cit.local"
         no_extra_spaces: yes
         allow_no_value: yes
-        
-  
+     with_items: "{{ webserver.results }}"
+     ignore_errors: True
+
    - ini_file:
          dest: ansible-inventory.ini
          section: IpDNS
-         option: "{{ webserver.server.public_v4 }}" 
-         value: "{{ current_url }}"
+         option: "{{ item.server.public_v4 }}" 
+         value: "{{ item.server.name }}.cit.local"
          no_extra_spaces: yes
-            
+     with_items: "{{ webserver.results }}"
+     ignore_errors: True       

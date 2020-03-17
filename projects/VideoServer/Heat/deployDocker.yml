@@ -12,6 +12,7 @@
   gather_facts: true
   roles:
     - roles/bootstrap
+  ignore_errors: True  
 
 - name: Install apt packages and docker
   hosts: webservers
@@ -27,6 +28,8 @@
   roles:
     - roles/docker
     - roles/docker-compose
+  ignore_errors: True  
+  
 
 
   

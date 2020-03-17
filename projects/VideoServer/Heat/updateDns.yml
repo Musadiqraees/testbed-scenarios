@@ -19,6 +19,9 @@
   hosts: webservers
   remote_user: ubuntu
   tasks:
+    - name: update instance apt-get update
+      shell: sudo apt-get update
+
     - name: Add Ansible inventory mappings to /etc/hosts
       shell: sudo apt install resolvconf
 

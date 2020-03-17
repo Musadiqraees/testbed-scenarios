@@ -12,6 +12,7 @@
         state: directory
         mode: "u=rw,g=wx,o=rwx"
         recurse: yes
+      ignore_errors: True  
       
 
     - name: Download traefik.toml
@@ -77,6 +78,8 @@
         name: docker
         enabled: yes
         state: started
+
+
 
     - name: Run docker-compose up
       shell: docker-compose up -d
