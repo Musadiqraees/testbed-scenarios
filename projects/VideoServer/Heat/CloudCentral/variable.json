@@ -6,4 +6,4 @@
   current_state: present
   current_network: UseCase-Net
   current_security_groups: Raees,default
-  numberOfInstances: 5
+  numberOfInstances: 2
