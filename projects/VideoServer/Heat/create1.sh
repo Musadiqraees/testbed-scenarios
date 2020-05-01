@@ -9,7 +9,7 @@ do
  done
 
 ansible-playbook updateDns.yml
-ansible-playbook deployDocker.yml
+ansible-playbook deployDocker.yml 
 
 ansible-playbook deploypeertubes.yml
 ansible-playbook restApiToFollowIntances.yml

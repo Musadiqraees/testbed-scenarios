@@ -1,5 +1,6 @@
 - name: check DNS
   hosts: DNS
+  gather_facts: false
   remote_user: ubuntu
   tasks:
     - name: Add Ansible inventory mappings to /etc/hosts
@@ -20,13 +21,16 @@
   remote_user: ubuntu
   tasks:
     - name: Add Ansible inventory mappings to /etc/hosts
+      shell: sudo apt install update
+
+    - name: Add Ansible inventory mappings to /etc/hosts
       shell: sudo apt install resolvconf
 
     - name: Insert a line at the end of a file.
       become: true
       lineinfile:
         path: /etc/resolvconf/resolv.conf.d/head
-        line: nameserver 10.1.10.104 
+        line: nameserver 10.1.30.37
       ignore_errors: True
 
     - name: restart resolvconf

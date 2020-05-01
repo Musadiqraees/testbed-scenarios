@@ -1,9 +1,9 @@
   current_image: ubuntu-16.04
-  current_hostname: peertube123
+  current_hostname: peertube4
   key_name: RaeesMacbook
   availability_zone: nova
   current_flavor: m1.medium
   current_state: present
   current_network: UseCaseNet
   current_security_groups: Raees,default
-  current_url: peertube123.cit.local
+  current_url: peertube4.cit.local

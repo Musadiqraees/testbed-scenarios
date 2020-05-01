@@ -25,15 +25,6 @@
         meta:
      register: webserver
 
-   - name: Wait for SSH on the Instance
-     command: >
-        ssh -oBatchMode=yes -oStrictHostKeyChecking=no 
-        ubuntu@{{webserver.server.public_v4}} true
-     register: result
-     retries: 30
-     delay: 10 
-     ignore_errors: yes
-     
 
    - name: Add ubuntu Instance to Inventory
      add_host: name=webserver groups=webservers
