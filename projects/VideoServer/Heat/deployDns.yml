@@ -1,0 +1,79 @@
+- hosts: DNS
+  become: yes
+  remote_user: ubuntu
+  gather_facts: True
+  tasks:
+  - name: disable systemd-resolved
+    shell: sudo systemctl disable systemd-resolved
+    ignore_errors: True
+
+
+  - name: disable systemd-stop
+    shell: sudo systemctl stop systemd-resolved
+    ignore_errors: True
+  
+
+  - name : remove the symlinked resolv.conf 
+    shell : ls -lh /etc/resolv.conf 
+    ignore_errors: True
+
+
+  - name : remove  resolv.conf   
+    shell: sudo rm /etc/resolv.conf
+    ignore_errors: True
+  
+
+  - name: Copy file resolv.conf with owner and permissions
+    copy:
+      src: resolv.conf
+      dest: /etc/resolv.conf 
+      
+         
+
+  - name: install update
+    shell: sudo apt-get update
+    ignore_errors: True
+    
+
+  - name: install dnsmaswq
+    shell: sudo apt-get install dnsmasq
+    ignore_errors: True
+   
+
+  - name : remove the dnsmasq.conf   
+    shell: sudo rm /etc/dnsmasq.conf
+    ignore_errors: True
+    
+
+  - name: Copy file dnsmasq.conf with owner and permissions
+    copy:
+      src: dnsmasq.conf
+      dest: /etc/dnsmasq.conf
+      mode: '0755'
+   
+
+  - name: Copy file dnsmasq.conf with owner and permissions
+    copy:
+      src: dnsmasq
+      dest: /etc/default/dnsmasq
+      mode: '0755'
+  
+   
+  - name: Copy file resolv.conf with owner and permissions
+    shell: sudo systemctl restart dnsmasq
+   
+
+     
+  - name: Add Ansible inventory mappings to /etc/hosts
+    blockinfile:
+      path: /etc/hosts
+      block: |
+        {% for host in groups['IpDNS'] %}
+        {{ host | replace('=', ' ') }}  
+        {% endfor %}
+        
+  - name: restart Dnsserver
+    become: true
+    shell: systemctl restart dnsmasq
+  
+
